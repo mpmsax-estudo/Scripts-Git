@@ -7,7 +7,10 @@
 
 
 
-# Nao pode-se utilizar nomes de musica com mais de um "-" hyphen
+# Nao pode-se utilizar nomes de musica:
+# com mais de um "-" hyphen 
+# com "´" ou "'" apostrofe - erro: letra de musica nao carrega
+
 # Debug
 set -x 
 
@@ -53,15 +56,15 @@ else
 	exit
 fi
 
-checkToPlayMP3 () {
-	if [ "$toPlay" != '0' ]; then
-		for i in "toPlayMP3.txt"; do
+#checkToPlayMP3 () {
+#	if [ "$toPlay" != '0' ]; then
+#		for i in "toPlayMP3.txt"; do
 			
-		done
-	else
-		echo 'Ocorreu algum erro';
-	fi
-}
+#		done
+#	else
+#		echo 'Ocorreu algum erro';
+#	fi
+#}
 
 whileDo () {
 	while [ "$toPlay" != '0' ]; do
@@ -70,22 +73,26 @@ whileDo () {
 			bandaEmusica=$(cat playNowMP3.tmp | awk -F'/' '{print $5}' | sed 's/.mp3//g');
 			nome=$(echo $bandaEmusica | awk -F'-' '{print $2}');
 			banda=$(echo $bandaEmusica | awk -F'-' '{print $1}');
+			flagParenteses=$(echo $nome | awk -F'(' '{print $1}')'empty';
 			flagNome=$(echo $nome)'empty';
 			#lyric=$(find Music/ -iname "*$nome*$banda*" | head -n1)'empty';
 			#if [ "$lyric | grep -o '('" == '(' ]; then
-			if [ "$nome | grep -o '('" == '(' ]; then
+ 			#if [ "$nome | grep -o '('" == '\(' ]; then
+ 			if [ "$flagParenteses" != 'empty' ]; then
 				nome=$(echo $nome | awk -F'(' '{print $1}');
 				#lyric=$(find Music/ -iname "*$nome*$banda*" | head -n1)'empty';
 			fi
 			lyric=$(find Music/ -iname "*$nome*$banda*" | grep '.txt' | head -n1)'empty';
 			if [ "$flagNome" != 'empty' ] && [ "$lyric" != 'empty' ]; then
-				gedit $(echo $lyric | sed 's/empty//g')  &
+				gedit "$(echo $lyric | sed 's/empty//g')"  &
+				PID=$!
 			fi
 		fi
 		#if [ "$letra" -ne 0 ] || [ "$flagNome" == 'empty' ] || [ "$lyric" == 'empty' ]; then
 		wc -l toPlayMP3.txt playedMP3.tmp;
 		# "$(playNowMP3.tmp)" -> jeito de evitar erros com caracteres especiais.
-		mplayer "$(playNowMP3.tmp)";
+		mplayer "$(cat playNowMP3.tmp)";
+		kill $PID;
 		#fi
 	 	#totem "$(cat playNowMP3.tmp | head -n1 | shuf -n1)";
 		#mplayer -xy 400 -geometry 1250:0 "$(cat playNowMP3.tmp)"
