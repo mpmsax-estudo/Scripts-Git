@@ -6,7 +6,7 @@
 #cp /tmp/playlistMP4.tmp playlistMP4.txt
 
 
-
+# OBS: importantes para executar o Script.
 # Nao pode-se utilizar nomes de musica:
 # com mais de um "-" hyphen 
 # com "´" ou "'" apostrofe - erro: letra de musica nao carrega
@@ -17,6 +17,7 @@ set -x
 # renomearMP3.sh - Necessario retirar "'" e espacos, para esse script funcionar sem erro
 
 #find /home/marcospaulo/Music/ -maxdepth 1 -iname *.mp3 > playlistMP3.txt;
+#find /home/marcospaulo/Music/OtimasMasNaoAlcancoTonalidade/ -maxdepth 1 -iname *.mp3 >> playlistMP3.txt;
 #find /home/marcospaulo/Music/ -iname *.mp3 | grep -v Pornografica > playlistMP3.txt;
 #find /home/marcospaulo/Music/MusicasInstrumentais/ -iname *.mp3 >> playlistMP3.txt;
 # directoriesMP3\&Youtube.txt
@@ -56,15 +57,15 @@ else
 	exit
 fi
 
-#checkToPlayMP3 () {
-#	if [ "$toPlay" != '0' ]; then
-#		for i in "toPlayMP3.txt"; do
+checkToPlayMP3 () {
+	if [ "$toPlay" != '0' ]; then
+		for i in "toPlayMP3.txt"; do
 			
-#		done
-#	else
-#		echo 'Ocorreu algum erro';
-#	fi
-#}
+		done
+	else
+		echo 'Ocorreu algum erro';
+	fi
+}
 
 whileDo () {
 	while [ "$toPlay" != '0' ]; do
@@ -84,7 +85,7 @@ whileDo () {
 			fi
 			lyric=$(find Music/ -iname "*$nome*$banda*" | grep '.txt' | head -n1)'empty';
 			if [ "$flagNome" != 'empty' ] && [ "$lyric" != 'empty' ]; then
-				gedit "$(echo $lyric | sed 's/empty//g')"  &
+				gedit -s "$(echo $lyric | sed 's/empty//g')"  &
 				PID=$!
 			fi
 		fi
