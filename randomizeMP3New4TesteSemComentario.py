@@ -1,12 +1,23 @@
+#!/usr/bin/python3.6
+
 import os.path, subprocess, sys, random, platform, pdb, signal
+import pandas as pd
 from pathlib import Path
 # To debug with pdb grep -v ^'#-' esseScript.py > novoScriptDebugPDB.py
 #-import pdb
 
 #-pdb.set_trace()
 
+######################### Things to improve: separete music by ';' whithout spaces, read a list to play (at the moment only one band possible)
+######################### show number of musics of a band in the front of the band name
+######################### Sort list by initial letter
+
 # N1 to run
 # Verify condition to run program
+
+def readlines(fileName) :
+	lines = open(dirToRun + fileName).readlines()
+
 def checkToRun():
 	global flagOS, flagPlayList, musicPath, homePath, dirToRun
 	flagOS=platform.system()
@@ -42,11 +53,22 @@ def runMP3():
 	countToPlay=sum(1 for line in open(dirToRun + '/toPlayMP3.txt'))
 
 #	start condition to choose list or band
-	if escBanda == 'sim' :
+	if escBanda == 's' :
 		toPlayMP3File = '/toPlayMP3BandList.txt'
 
 #		Show bands and lists to choose
+
+#		Localizacao das listas
+#		999-MusicasAnime/ = MusicasAnime\n 999-MusicasAnime/Naruto(classico) = Naruto(classico)\n \
+#		999-MusicasAnime/NarutoShippuden = NarutoShippuden\n 999-MusicasAnime/Bleach = Bleach\n \
+#		999-MUSICASELETRASDEMUSICA/Chronotorious = Chronotorious\n claMusicasInstrumentais\n \
+#		claMusicasInstrumentais/FILMES/Back_To_The_Future = Back_To_The_Future\n \
+#		claMusicasInstrumentais/Rock/(2013)UnstoppableMomentum = UnstoppableMomentum\n \
+#		claMusicasInstrumentais/VA-TheMellowSoundOfJazz-RomanticJazzMoments-2013 = RomanticJazzMoments
 		uniqueList = []
+#		Especific lists selected
+		bandasToChoose = ['MusicasAnime', 'Naruto(classico)', 'NarutoShippuden', 'Bleach', 'Chronotorious', 'claMusicasInstrumentais', \
+		'Back_To_The_Future', 'UnstoppableMomentum', 'RomanticJazzMoments']
 		removeList = [ '', '02.PenniesFromHeaven', '09.SmokeGetsInYourEyes', '11.SometimesImHappy', '14.HowDeepIsTheOcean', '16.Godchild', \
 		'18.ItNeverEnteredInMind', '35.AStringOfPearls' ]
 		bandasEmusicas = open(dirToRun + '/playlistMP3.txt').readlines()
@@ -55,17 +77,21 @@ def runMP3():
 			if banda not in uniqueList:
 				if banda not in removeList:
 					uniqueList.append(banda)
-		uniqueList.sort()
-		print(uniqueList)
-#		Listas especificas selecionadas
-		print(' 999-MusicasAnime/ = MusicasAnime\n 999-MusicasAnime/Naruto(classico) = Naruto(classico)\n \
-999-MusicasAnime/NarutoShippuden = NarutoShippuden\n 999-MusicasAnime/Bleach = Bleach\n \
-999-MUSICASELETRASDEMUSICA/Chronotorious = Chronotorious\n claMusicasInstrumentais\n \
-claMusicasInstrumentais/FILMES/Back_To_The_Future = Back_To_The_Future\n \
-claMusicasInstrumentais/Rock/(2013)UnstoppableMomentum = UnstoppableMomentum\n \
-claMusicasInstrumentais/VA-TheMellowSoundOfJazz-RomanticJazzMoments-2013 = RomanticJazzMoments')
+##		print(uniqueList)
 
-		qualBanda=input('Qual banda ou lista?\n')
+		uniqueList.sort()
+		bandasToChoose.extend(uniqueList)
+
+		bandasEnumeracao = []
+		c = 0;
+		for line in bandasToChoose :
+#			print(line + ' ' + str(c))
+			bandasEnumeracao.append(line + ' N=' + str(c))
+			c += 1
+		print(bandasEnumeracao)
+
+		qualBanda=input('Qual banda ou lista? Digitar apenas os numeros separados por espacos.\n')
+		qualBanda = (qualBanda.split(' '))
 
 #		Generate file with all possible songs (PS: Some songs aren't on playlistMP3.txt)
 		open(dirToRun + toPlayMP3File, 'w').writelines('')
@@ -74,6 +100,7 @@ claMusicasInstrumentais/VA-TheMellowSoundOfJazz-RomanticJazzMoments-2013 = Roman
 				filePath=(root+'/'+str(line))
 				if line.endswith('.mp3') :
 					open(dirToRun + toPlayMP3File, 'a').writelines(filePath+'\n')
+
 		bandasEmusicas = open(dirToRun + toPlayMP3File).readlines()
 ##		print(bandasEmusicas)
 
@@ -82,25 +109,26 @@ claMusicasInstrumentais/VA-TheMellowSoundOfJazz-RomanticJazzMoments-2013 = Roman
 ##		toPlayMP3BandList = []
 		open(dirToRun + toPlayMP3File, 'w').writelines('')
 		for line in bandasEmusicas :
-			if qualBanda in line :
-				open(dirToRun + toPlayMP3File, 'a').writelines(line)
-##					toPlayMP3BandList.append(line)
-##			print(toPlayMP3BandList)
+			for x in qualBanda :
+				if bandasToChoose[int(x)] in line :
+					open(dirToRun + toPlayMP3File, 'a').writelines(line)
+
 		organizar = open(dirToRun + toPlayMP3File).readlines()
 		random.shuffle(organizar)
 		open(dirToRun + toPlayMP3File, 'w').writelines(organizar)
 
-#		contar quantidade de musicas a tocar
+#		count quantity of songs to play
 		countToPlay=sum(1 for line in open(dirToRun + toPlayMP3File))
 
-#	Condicao para executar programa ate a ultima musica
+#	Condition to execute program, until the last song
 	while countToPlay != 0 :
 		flag='0'
 		toPlayMP3NowFL = open(dirToRun + toPlayMP3File).readline()
 		open(dirToRun + '/playNowMP3.tmp', 'w').write(toPlayMP3NowFL)
 		print(toPlayMP3NowFL)
-#		Condicao de exibir letras de musica
-		if letra == 'sim' :
+
+#		Condition to open lyrics of songs for each playing
+		if letra == 's' :
 			bandasEmusicas = toPlayMP3NowFL.replace('.mp3', '').split('/')[-1].split('-')
 			print(bandasEmusicas)
 			print('Erro acima corrigido')
@@ -128,11 +156,11 @@ claMusicasInstrumentais/VA-TheMellowSoundOfJazz-RomanticJazzMoments-2013 = Roman
 								break
 				if flag == '1' :
 					break
-#		Condition: if music list exists
+#		Condition: if song list exists
 		if flagPlayList == True :
 			pass
 
-#		Condition: if music list don't exist
+#		Condition: if song list doesn't exist
 		else :
 			open(dirToRun+'/playlistMP3.txt', 'w').writelines('')
 			for root, dirs, files in os.walk(musicPath):
@@ -141,15 +169,19 @@ claMusicasInstrumentais/VA-TheMellowSoundOfJazz-RomanticJazzMoments-2013 = Roman
 					if line.endswith('.mp3'):
 						filePath=(root+'/'+str(line))
 						open(dirToRun+'/playlistMP3.txt', 'a').writelines(filePath+line+"\n")
+#		if operational system is Windows
 		if flagOS == 'Windows' :
 			subprocess.call('C:\\Program Files (x86)\\Windows Media Player\\wmplayer.exe /play /close "C:/Users/Student/Documents/notes/file.mp3"')
+#		if operational system is Linux
 		elif flagOS == 'Linux' :
 			subprocess.call(['mplayer', '-playlist', dirToRun + '/playNowMP3.tmp'])
-				#'/home/marcospaulo/playNowMP3.tmp'])
 		else :
+#		For other Operational Systems
 			print('Necessario Implementar codigo para o sistema')
 		if flag == '1' :
 			os.kill(PID, signal.SIGKILL)
+
+#		Remove played song from file list
 		with open(dirToRun + toPlayMP3File, 'r') as files:
 			for line in files:
 				if toPlayMP3NowFL in line :
@@ -158,20 +190,26 @@ claMusicasInstrumentais/VA-TheMellowSoundOfJazz-RomanticJazzMoments-2013 = Roman
 		lines = open(dirToRun + toPlayMP3File).readlines()
 		random.shuffle(lines)
 		open(dirToRun + toPlayMP3File, 'w').writelines(lines)
+
+######## NAO ESTA PRONTO
 ##		with open('playedMP3.tmp', 'r') as played:
 ##			lines = set(played)
 #		Classificando = []
 ##		Cla=open('ClassificandoPlayedMP3.txt', 'r').readlines()
 #		with open('ClassificandoPlayedMP3.txt', 'r') as Classificando:
 #			Cla = Classificando.readlines()
-
+######## programando para classificar musicas
+#/*
+#		playedMP3 = open(dirToRun + '/playedMP3.tmp').readlines()
+#		Path(dirToRun + '/ClassificandoPlayedMP3.txt').touch()
+#		ClassificandoPlayedMP3 = open(dirToRun + '/ClassificandoPlayedMP3.txt').readlines()
 		countPlayed=sum(1 for line in open(dirToRun + '/playedMP3.tmp'))
-		if countPlayed != 0 :
-			with open(dirToRun + '/playedMP3.tmp') as playedMP3, open('ClassificandoPlayedMP3.txt', 'a+') as ClassificandoPlayedMP3:
-				for line in ClassificandoPlayedMP3:
-					if not any(linePlayedMP3 in line for linePlayedMP3 in playedMP3):
-						ClassificandoPlayedMP3.write(linePlayedMP3)
-
+#		if countPlayed != 0 :
+#			with open(dirToRun + '/playedMP3.tmp') as playedMP3, open('ClassificandoPlayedMP3.txt', 'a+') as ClassificandoPlayedMP3:
+#				for claLine in ClassificandoPlayedMP3 :
+#					if not any(linePlayedMP3 in line for line in playedMP3):
+#						ClassificandoPlayedMP3.(linePlayedMP3)
+#						*/
 #		for lines in Cla:
 #			if line not in lines:
 #			if line in lines:
@@ -180,8 +218,9 @@ claMusicasInstrumentais/VA-TheMellowSoundOfJazz-RomanticJazzMoments-2013 = Roman
 #				open('ClassificandoPlayedMP3.txt', 'a+').write(line + '\n')
 #				with open('ClassificandoPlayedMP3.txt', 'a') as Classificando:
 #					Classificando.append(line)
+######## NAO ESTA PRONTO - FINAL
 
-#		Deleta musica jah tocada
+#		Delete played song
 		lines = open(dirToRun + toPlayMP3File, "r").readlines()
 		remove = open(dirToRun + "/playNowMP3.tmp", "r").readlines()
 		print(remove)
@@ -192,24 +231,26 @@ claMusicasInstrumentais/VA-TheMellowSoundOfJazz-RomanticJazzMoments-2013 = Roman
 				if line != remove:
 					f.write(line+'\n')
 
-		organizar = open('ClassificandoPlayedMP3.txt').readlines()
-		organizar.sort()
-		open('ClassificandoPlayedMP3.txt', 'w').writelines(organizar)
+######## NAO ESTA PRONTO
+#		organizar = open('ClassificandoPlayedMP3.txt').readlines()
+#		organizar.sort()
+#		open('ClassificandoPlayedMP3.txt', 'w').writelines(organizar)
+######## NAO ESTA PRONTO - FINAL
 
 		print(dirToRun + '/toPlayMP3.txt', sum(1 for line in open(dirToRun + '/toPlayMP3.txt')))
-		print(dirToRun + '/playedMP3.tmp', sum(1 for line in open(dirToRun + '/playedMP3.tmp')))
+		print(dirToRun + '/playedMP3.tmp: ', countPlayed)
 		print(dirToRun + '/toPlayMP3BandList.txt', sum(1 for line in open(dirToRun + '/toPlayMP3BandList.txt')))
 
 		countToPlay=sum(1 for line in open(dirToRun + toPlayMP3File))
 
-		if countToPlay == 0 and escBanda == 'sim' :
+		if countToPlay == 0 and escBanda == 's' :
 			print('Arquivo toPlayMP3BandList.txt esta vazio, saindo do programa.')
 			sys.exit()
-		if countToPlay == 0 and escBanda != 'sim' :
+		if countToPlay == 0 and escBanda != 's' :
 			print('Arquivo toPlayMP3.txt esta vazio, saindo do programa.')
 			sys.exit()
 
-# N2 a executar
+# N2 to run
 def prepareToRun():
 	Path(dirToRun + '/playedMP3.txt').touch()
 	Path(dirToRun + '/toPlayMP3.tmp').touch()
@@ -221,13 +262,11 @@ def prepareToRun():
 	for valor in list:
 		os.chmod(valor, 0o600);
 	global countToPlay, letra, escBanda, qualBanda
-#	toPlay=sum(1 for line in open(dirToRun + '/toPlayMP3.txt'))
 	countToPlay=sum(1 for line in open(dirToRun + '/toPlayMP3.txt'))
-	letra=input('Letra de Musica? sim/nao\n')
-	escBanda=input('Qual banda ou lista? sim/nao\n')
+	letra=input('Letra de Musica? s/n\n')
+	escBanda=input('Escolher banda ou lista? s/n\n')
 
-# N3 a executar
-# executar pela primeira vez
+# N3 to run
 def runForFirstTime ():
 	if countToPlay == 0 :
 		lines = open(dirToRun + '/playlistMP3.txt').readlines()
