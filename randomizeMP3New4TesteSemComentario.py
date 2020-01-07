@@ -1,14 +1,12 @@
 #!/usr/bin/python3.6
 
 import os.path, subprocess, sys, random, platform, pdb, signal
-import pandas as pd
 from pathlib import Path
 # To debug with pdb grep -v ^'#-' esseScript.py > novoScriptDebugPDB.py
 #-import pdb
 
 #-pdb.set_trace()
 
-######################### Things to improve: separete music by ';' whithout spaces, read a list to play (at the moment only one band possible)
 ######################### show number of musics of a band in the front of the band name
 ######################### Sort list by initial letter
 
@@ -91,6 +89,14 @@ def runMP3():
 		print(bandasEnumeracao)
 
 		qualBanda=input('Qual banda ou lista? Digitar apenas os numeros separados por espacos.\n')
+
+#		caracteresInvalidos
+		invalido='abcdefghijklmnopqrstuvwxyz'
+		for i in invalido :
+			if i not in qualBanda :
+				print('Musica escolhida invalida, necessario valores numericos separados por espacos')
+				sys.exit()
+
 		qualBanda = (qualBanda.split(' '))
 
 #		Generate file with all possible songs (PS: Some songs aren't on playlistMP3.txt)
