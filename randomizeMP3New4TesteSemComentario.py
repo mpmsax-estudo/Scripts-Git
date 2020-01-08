@@ -88,8 +88,24 @@ def runMP3():
 		bandasToChoose.extend(uniqueList)
 
 		bandasEnumeracao = []
-		for idx, line in enumerate(bandasToChoose):
-			bandasEnumeracao.append(line + ' N=' + str(idx))
+
+######## Between this junks - don't delete these codes
+# First codes can be placed by second codes
+
+# First codes - count number of array identity
+#		for idx, line in enumerate(bandasToChoose):
+#			bandasEnumeracao.append(line + ' N=' + str(idx))
+# Second codes - count quantity of songs by band or list - codigo correto
+		for idx, bTCline in enumerate(bandasToChoose):
+			count = 0
+			for root, dirs, files in os.walk(musicPath):
+				for fline in files:
+					if fline.endswith('.mp3') :
+						filePath=(root+'/'+str(fline))
+						if bandasToChoose[idx] in filePath :
+							count += 1
+			bandasEnumeracao.append('Qnt=' + str(count) + ' ' + bTCline + ' N=' + str(idx))
+########
 		print(bandasEnumeracao)
 
 		qualBanda=input('Qual banda ou lista? Digitar apenas os numeros separados por espacos.\n')
