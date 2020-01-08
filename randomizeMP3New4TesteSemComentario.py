@@ -7,8 +7,8 @@ from pathlib import Path
 
 #-pdb.set_trace()
 
-######################### show number of musics of a band in the front of the band name
 ######################### Sort list by initial letter
+######################### reduce number of code lines
 
 # Generate playlistMP3.txt in linux Konsole
 # Directories that you want
