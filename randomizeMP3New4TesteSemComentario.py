@@ -10,6 +10,13 @@ from pathlib import Path
 ######################### show number of musics of a band in the front of the band name
 ######################### Sort list by initial letter
 
+# Generate playlistMP3.txt in linux Konsole
+# Directories that you want
+#find $HOME/Music/ -maxdepth 1 -iname *.mp3 > ~/runMP3/playlistMP3.txt;
+#find $HOME/Music/claOtimasMasNaoAlcancoTonalidade/ -maxdepth 1 -iname *.mp3 >> ~/runMP3/playlistMP3.txt;
+#find $HOME/Music/claMusicasInstrumentais/ -iname *.mp3 >> ~/runMP3/playlistMP3.txt;
+# directoriesMP3\&Youtube.txt
+
 # N1 to run
 # Verify condition to run program
 
@@ -81,11 +88,8 @@ def runMP3():
 		bandasToChoose.extend(uniqueList)
 
 		bandasEnumeracao = []
-		c = 0;
-		for line in bandasToChoose :
-#			print(line + ' ' + str(c))
-			bandasEnumeracao.append(line + ' N=' + str(c))
-			c += 1
+		for idx, line in enumerate(bandasToChoose):
+			bandasEnumeracao.append(line + ' N=' + str(idx))
 		print(bandasEnumeracao)
 
 		qualBanda=input('Qual banda ou lista? Digitar apenas os numeros separados por espacos.\n')
@@ -93,7 +97,7 @@ def runMP3():
 #		caracteresInvalidos
 		invalido='abcdefghijklmnopqrstuvwxyz'
 		for i in invalido :
-			if i not in qualBanda :
+			if i in qualBanda :
 				print('Musica escolhida invalida, necessario valores numericos separados por espacos')
 				sys.exit()
 
