@@ -162,7 +162,7 @@ def runMP3():
 		if letra == 's' :
 			bandasEmusicas = toPlayMP3NowFL.replace('.mp3', '').split('/')[-1].split('-')
 			print(bandasEmusicas)
-			print('Erro acima corrigido')
+			print('Erro acima corrigido\n')
 			banda = bandasEmusicas[0]
 ##			print(banda)
 			musica = bandasEmusicas[1].rstrip("\n\r")
@@ -189,7 +189,7 @@ def runMP3():
 				if flag == '1' :
 					break
 			if PID == 0 :
-				print('Letra de Musica nao encontrada')
+				print('Letra de Musica nao encontrada\n')
 #		Condition: if song list exists
 		if flagPlayList == True :
 			pass
