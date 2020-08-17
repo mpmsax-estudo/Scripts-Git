@@ -222,7 +222,8 @@ def runMP3():
 					with open(dirToRun + toPlayMP3File, 'a') as files:
 						files.write(line.replace(toPlayMP3NowFL, ''))
 		lines = open(dirToRun + toPlayMP3File).readlines()
-		random.shuffle(lines)
+#               Atrapalha, jah foi randomizado, somente randomizar uma vez na primeira execucao do arquivo
+#		random.shuffle(lines)
 		open(dirToRun + toPlayMP3File, 'w').writelines(lines)
 
 ######## NAO ESTA PRONTO
